@@ -4,6 +4,7 @@
 #include<ctype.h>
 #include "readUtil.h"
 #include "writeUtil.h"
+#include "statUtil.h"
 
 int isnumber(char num[]) {
     //if string is empty it will only have the null character
@@ -49,15 +50,15 @@ int main(int argc, char** argv) {
         }
     }
 
-    /*
-    else if ( (strcmp(argv[1], "write") == 0) || (stcmp(argv[1], "-w")) ) {
-        if(argc >= 2 && isnumber(argv[2]))   {
-            write_file(argv[1], getnumber(argv[2]));
+    
+    else if ( (strcmp(argv[1], "stat") == 0) || (strcmp(argv[1], "-s") == 0) ) {
+        if(argc >= 2)   {
+            stat_file(argv[2]);
         }
         else {
             printf("Invalid arguments : ");
         }
-    }*/
+    }
 
     return 0;
 }
