@@ -5,7 +5,7 @@
 #include "readUtil.h"
 #include "writeUtil.h"
 #include "statUtil.h"
-
+#include "pipeUtil.h"
 int isnumber(char num[]) {
     //if string is empty it will only have the null character
     if (num[0] == '\0') {
@@ -54,6 +54,15 @@ int main(int argc, char** argv) {
     else if ( (strcmp(argv[1], "stat") == 0) || (strcmp(argv[1], "-s") == 0) ) {
         if(argc >= 2)   {
             stat_file(argv[2]);
+        }
+        else {
+            printf("Invalid arguments : ");
+        }
+    }
+
+    else if ( (strcmp(argv[1], "pipe") == 0) || (strcmp(argv[1], "-w") == 0) ) {
+        if( argc >= 4 && isnumber(argv[4]) )   {
+            pipef( argv[2], argv[3],getnumber(argv[4]));
         }
         else {
             printf("Invalid arguments : ");

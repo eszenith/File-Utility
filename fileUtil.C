@@ -10,3 +10,8 @@ void closef(int fd) {
         exit(0);
     }
 }
+
+void create_file(char filename[]) {
+    int fd = creat(filename,0644 );
+    closef(fd);
+}
