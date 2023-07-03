@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include<unistd.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <cstdlib>
 #include <sys/stat.h>
@@ -62,10 +62,15 @@ int pipef(char filename1[], char filename2[], int bytecount) {
 }
 
 
-int namedpipef(char pipename[], int bytecount) {
+int namedpipef(char pipename[], int bytecount, int direction) {
     char* buff  = (char*)malloc(bytecount * (sizeof(char)));
     mknod(pipename, S_IFIFO | 0777, 0);
 
+    char parent[] = "parent";
+    char child[] = "child";
+
+    if(direction == 1) {
+        printf("\n ( Parent -> Child ) Child process reads data \n");
     if(fork() != 0) {
         int pipefd = open(pipename, O_WRONLY);
         printf("\nIn parent process write data to send to child process through pipe named : %s\n", pipename);
@@ -77,16 +82,43 @@ int namedpipef(char pipename[], int bytecount) {
         closef(pipefd);
     }
     else {
-        printf("\nIn child: %s\n", pipename);
         char* buff2  = (char*)malloc(bytecount * (sizeof(char)));
         int pipefd = open(pipename, O_RDONLY);
         if (read(pipefd, buff2, bytecount) == -1) {
                 printf("\nError while readingto named pipe\n");
                 return -1;
         }
-        printf("%s", buff2);
+        printf("\nRecieved following in child process from parent process :\n");
+        printf("%s\n", buff2);
         closef(pipefd);
         free(buff2);
+    }
+    }
+
+    else {
+        printf("\n( Child -> Parent ) Child process writes data \n");
+        if(fork() == 0) {
+        int pipefd = open(pipename, O_WRONLY);
+        printf("\nIn child process write data to send to parent process through pipe named : %s\n", pipename);
+        scanf("%s", buff);
+        if (write(pipefd, buff, bytecount) == -1) {
+                printf("\nError while writing to named pipe\n");
+                return -1;
+            }
+        closef(pipefd);
+    }
+    else {
+        char* buff2  = (char*)malloc(bytecount * (sizeof(char)));
+        int pipefd = open(pipename, O_RDONLY);
+        if (read(pipefd, buff2, bytecount) == -1) {
+                printf("\nError while readingto named pipe\n");
+                return -1;
+        }
+        printf("\nRecieved following in parent process from child process :\n");
+        printf("%s\n", buff2);
+        closef(pipefd);
+        free(buff2);
+    }
     }
 
     free(buff);

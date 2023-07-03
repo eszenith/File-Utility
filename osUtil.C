@@ -6,6 +6,7 @@
 #include "writeUtil.h"
 #include "statUtil.h"
 #include "pipeUtil.h"
+#include "fileUtil.h"
 int isnumber(char num[]) {
     //if string is empty it will only have the null character
     if (num[0] == '\0') {
@@ -34,11 +35,13 @@ void menu(){
     do {
 
         printf("\n-----------------MENU-----------------\n");
-        printf("\n1. Read a file\n");
-        printf("\n2. write to a file\n");
-        printf("\n3. Get stat of file\n");
-        printf("\n4. Unamed pipe to tansfer data from one file to another\n");
-        printf("\n5. Named pipe for process communication\n");
+        printf("\n1. Read a file");
+        printf("\n2. write to a file");
+        printf("\n3. Get stat of file");
+        printf("\n4. Unamed pipe to tansfer data from one file to another");
+        printf("\n5. Named pipe for process communication (Read data)");
+        printf("\n6. Named pipe for process communication (Write data)");
+        printf("\n0. Exit \n");
         scanf("%d", &option);
 
         switch(option) {
@@ -77,26 +80,80 @@ void menu(){
                 write_file(filename,bytecount, offset, whence);
                 break;
             }
-            case 3 :{
+            case 3 : {
                 int bytecount=0;
                 char filename[2048];
                 printf("\nEnter file name : ");
                 scanf("%s", filename);
-                printf("\nEnter bytes to read : ");
-                scanf("%d", bytecount);
-                read_file(filename,bytecount);
+                stat_file(filename);
                 break;
             }
+            case 4: {
+                int bytecount=0;
+                char filename1[2048];
+                char filename2[2048];
+                printf("\nEnter filename1 : ");
+                scanf("%s", filename1);
+                printf("\nEnter filename2 : ");
+                scanf("%s", filename2);
+                printf("\nEnter bytes to read : ");
+                scanf("%d", &bytecount);
+                pipef(filename1, filename2, bytecount);
+                break;
+                
+            }
+            case 5: {
+                int bytecount=0;
+                char pipename[2048];
+                printf("\nEnter pipename : ");
+                scanf("%s", pipename);
+                printf("\nEnter bytes to read : ");
+                scanf("%d", &bytecount);
+                namedpipef( pipename, bytecount, 1);
+                break;
+                
+            }
+            case 6: {
+                int bytecount=0;
+                char pipename[2048];
+                printf("\nEnter pipename : ");
+                scanf("%s", pipename);
+                printf("\nEnter bytes to read : ");
+                scanf("%d", &bytecount);
+                namedpipef( pipename, bytecount, 2);
+                break;
+                
+            }
         }
-    }while(option != 0);
+    }while(0);
 }
 
+void help() {
+    printf("\n-----------------help------------------\n");
+    printf("\nUSAGE : ./main [OPTIONS] [PARAMETERS]\n");
+    printf("\n1.  ./main read filename bytecount\n");
+    printf("\n2.  ./main write filename bytecount offset whence \n");
+    printf("\n3.  ./main stat filename \n");
+    printf("\n4.  ./main pipe filename1 filename2 bytecount\n");
+    printf("\n5.  ./main npipe bytecount\n");
+    printf("\n6.  ./main creat filename permissions\n");
+    printf("\n7.  ./main menu\n");
+    printf("\n8.  ./main help\n");
+}
 int main(int argc, char** argv) {
     
     
     if ( (strcmp(argv[1], "read") == 0) || (strcmp(argv[1], "-r") == 0) ) {
         if(argc >= 3 && isnumber(argv[3]))   {
             read_file(argv[2], getnumber(argv[3]));
+        }
+        else {
+            printf("Invalid arguments : ");
+        }
+    }
+    if ( (strcmp(argv[1], "creat") == 0) || (strcmp(argv[1], "-c") == 0) ) {
+        if(argc >= 3 && isnumber(argv[3]))   {
+            create_file(argv[2], argv[3]);
         }
         else {
             printf("Invalid arguments : ");
@@ -122,7 +179,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    else if ( (strcmp(argv[1], "pipe") == 0) || (strcmp(argv[1], "-w") == 0) ) {
+    else if ( (strcmp(argv[1], "pipe") == 0) || (strcmp(argv[1], "-p") == 0) ) {
         if( argc >= 4 && isnumber(argv[4]) )   {
             pipef( argv[2], argv[3],getnumber(argv[4]));
         }
@@ -131,9 +188,14 @@ int main(int argc, char** argv) {
         }
     }
 
-    else if ( (strcmp(argv[1], "npipe") == 0) || (strcmp(argv[1], "-w") == 0) ) {
-        if( argc >= 2 && isnumber(argv[3]) )   {
-            namedpipef( argv[2], getnumber(argv[3]));
+    else if ( (strcmp(argv[1], "npipe") == 0) || (strcmp(argv[1], "-np") == 0) ) {
+        if( argc >= 2 && isnumber(argv[4]) )   {
+            if (strcmp(argv[3],"read") == 0)
+                namedpipef( argv[2], getnumber(argv[4]),1 );
+            else if (strcmp(argv[3],"write") == 0)
+                namedpipef( argv[2], getnumber(argv[4]),2 );
+            else
+                printf("Invalid arguments : ");
         }
         else {
             printf("Invalid arguments : ");
@@ -146,6 +208,9 @@ int main(int argc, char** argv) {
         else {
             printf("Invalid arguments : ");
         }
+    }
+    else if ( (strcmp(argv[1], "help") == 0) || (strcmp(argv[1], "-h") == 0) ) {
+        help();
     }
 
 

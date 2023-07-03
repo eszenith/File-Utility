@@ -11,7 +11,10 @@ void closef(int fd) {
     }
 }
 
-void create_file(char filename[]) {
-    int fd = creat(filename,0644 );
+void create_file(char filename[], char* mode1) {
+    mode_t mode = strtol(mode1, NULL, 8);
+    mode_t old = umask(mode);
+    int fd = creat(filename, mode);
+    umask(old);
     closef(fd);
 }

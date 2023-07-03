@@ -5,7 +5,20 @@
 
 #include <stdio.h>
 
-void displayStatInfo(char* filename, const struct stat *sb)
+void printPermissions(mode_t mode) {
+  printf((mode & S_IRUSR)? "r":"-");
+  printf((mode & S_IWUSR)? "w":"-");
+  printf((mode & S_IXUSR)? "x":"-");
+  printf((mode & S_IRGRP)? "r":"-");
+  printf((mode & S_IWGRP)? "w":"-");
+  printf((mode & S_IXGRP)? "x":"-");
+  printf((mode & S_IROTH)? "r":"-");
+  printf((mode & S_IWOTH)? "w":"-");
+  printf((mode & S_IXOTH)? "x":"-");
+  printf("\n");
+}
+
+void displayStats(char* filename, const struct stat *sb)
 {
  printf("\n\nFile type: ");
 switch (sb->st_mode & S_IFMT) {
@@ -18,11 +31,11 @@ switch (sb->st_mode & S_IFMT) {
  case S_IFSOCK: printf("socket\n"); break;
  default: printf("unknown file type?\n"); break;
  }
- //printf("Device containing i-node: major=%ld minor=%ld\n",
- //(long) major(sb->st_dev), (long) minor(sb->st_dev));
+ printf("File permissions: 0%o  ",  sb->st_mode & 4095);
+ printPermissions(sb->st_mode);
+ printf("Device containing i-node: major=%d \n",sb->st_dev);
  
-    printf("I-node number: %ld\n", (long) sb->st_ino);
- //printf("Mode: %lo (%s)\n", (unsigned long) sb->st_mode, filePermStr(sb->st_mode, 0));
+printf("I-node number: %ld\n", (long) sb->st_ino);
  
 if (sb->st_mode & (S_ISUID | S_ISGID | S_ISVTX))
  printf(" special bits set: %s%s%s\n",
@@ -31,12 +44,9 @@ if (sb->st_mode & (S_ISUID | S_ISGID | S_ISVTX))
  (sb->st_mode & S_ISVTX) ? "sticky " : "");
  printf("Number of (hard) links: %ld\n", (long) sb->st_nlink);
  
-printf("Ownership: UID=%ld GID=%ld\n",
- (long) sb->st_uid, (long) sb->st_gid);
+printf("Ownership: UID=%ld GID=%ld\n", (long) sb->st_uid, (long) sb->st_gid);
  if (S_ISCHR(sb->st_mode) || S_ISBLK(sb->st_mode))
- // printf("Device number (st_rdev): major=%ld; minor=%ld\n",
- // (long) major(sb->st_rdev), (long) minor(sb->st_rdev));
-
+printf("Device number (st_rdev): major=%d \n",sb->st_rdev);
  printf("File size: %d bytes\n", sb->st_size);
  printf("Optimal I/O block size: %ld bytes\n", (long) sb->st_blksize);
  printf("512B blocks allocated: %lld\n", (long long) sb->st_blocks);
@@ -51,6 +61,6 @@ void stat_file(char filename[]) {
         printf("\nError while getting stat file \n");
         //exit(0);
     }
-    displayStatInfo(filename, &sb);
+    displayStats(filename, &sb);
 
 }
