@@ -12,9 +12,27 @@ void closef(int fd) {
 }
 
 void create_file(char filename[], char* mode1) {
+    umask(0);
     mode_t mode = strtol(mode1, NULL, 8);
-    mode_t old = umask(mode);
     int fd = creat(filename, mode);
-    umask(old);
+    if(fd == -1) {
+        printf("\nError while creating file.\n");
+    }
     closef(fd);
+}
+
+void movefile_pointer(int fd, int offset, int whence) {
+    if(whence == 2) 
+        whence = SEEK_END;
+    else if (whence == 1) 
+        whence = SEEK_CUR;
+    else 
+        whence = SEEK_SET;
+
+    int curr = lseek(fd, offset ,whence);
+    //printf("\ncurrent is : %d\n", curr);
+    if (curr == -1) {
+        printf("\n Error while seeking in file\n");
+        exit(0);
+    }
 }

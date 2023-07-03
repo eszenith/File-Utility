@@ -2,65 +2,84 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <time.h>
-
+#include <cstdlib>
 #include <stdio.h>
 
-void printPermissions(mode_t mode) {
-  printf((mode & S_IRUSR)? "r":"-");
-  printf((mode & S_IWUSR)? "w":"-");
-  printf((mode & S_IXUSR)? "x":"-");
-  printf((mode & S_IRGRP)? "r":"-");
-  printf((mode & S_IWGRP)? "w":"-");
-  printf((mode & S_IXGRP)? "x":"-");
-  printf((mode & S_IROTH)? "r":"-");
-  printf((mode & S_IWOTH)? "w":"-");
-  printf((mode & S_IXOTH)? "x":"-");
-  printf("\n");
-}
-
-void displayStats(char* filename, const struct stat *sb)
+void printPermissions(mode_t mode)
 {
- printf("\n\nFile type: ");
-switch (sb->st_mode & S_IFMT) {
- case S_IFREG: printf("regular file\n"); break;
- case S_IFDIR: printf("directory\n"); break;
- case S_IFCHR: printf("character device\n"); break;
- case S_IFBLK: printf("block device\n"); break;
- case S_IFLNK: printf("symbolic (soft) link\n"); break;
- case S_IFIFO: printf("FIFO or pipe\n"); break;
- case S_IFSOCK: printf("socket\n"); break;
- default: printf("unknown file type?\n"); break;
- }
- printf("File permissions: 0%o  ",  sb->st_mode & 4095);
- printPermissions(sb->st_mode);
- printf("Device containing i-node: major=%d \n",sb->st_dev);
- 
-printf("I-node number: %ld\n", (long) sb->st_ino);
- 
-if (sb->st_mode & (S_ISUID | S_ISGID | S_ISVTX))
- printf(" special bits set: %s%s%s\n",
- (sb->st_mode & S_ISUID) ? "set-UID " : "",
- (sb->st_mode & S_ISGID) ? "set-GID " : "",
- (sb->st_mode & S_ISVTX) ? "sticky " : "");
- printf("Number of (hard) links: %ld\n", (long) sb->st_nlink);
- 
-printf("Ownership: UID=%ld GID=%ld\n", (long) sb->st_uid, (long) sb->st_gid);
- if (S_ISCHR(sb->st_mode) || S_ISBLK(sb->st_mode))
-printf("Device number (st_rdev): major=%d \n",sb->st_rdev);
- printf("File size: %d bytes\n", sb->st_size);
- printf("Optimal I/O block size: %ld bytes\n", (long) sb->st_blksize);
- printf("512B blocks allocated: %lld\n", (long long) sb->st_blocks);
- printf("Last file access: %s", ctime(&sb->st_atime));
- printf("Last file modification: %s", ctime(&sb->st_mtime));
- printf("Last status change: %s", ctime(&sb->st_ctime));
+    printf((mode & S_IRUSR) ? "r" : "-");
+    printf((mode & S_IWUSR) ? "w" : "-");
+    printf((mode & S_IXUSR) ? "x" : "-");
+    printf((mode & S_IRGRP) ? "r" : "-");
+    printf((mode & S_IWGRP) ? "w" : "-");
+    printf((mode & S_IXGRP) ? "x" : "-");
+    printf((mode & S_IROTH) ? "r" : "-");
+    printf((mode & S_IWOTH) ? "w" : "-");
+    printf((mode & S_IXOTH) ? "x" : "-");
+    printf("\n");
 }
 
-void stat_file(char filename[]) {
+void displayStats(char *filename, const struct stat *sb)
+{
+    printf("\n\nFile type: ");
+    switch (sb->st_mode & S_IFMT)
+    {
+    case S_IFREG:
+        printf("regular file\n");
+        break;
+    case S_IFDIR:
+        printf("directory\n");
+        break;
+    case S_IFCHR:
+        printf("character device\n");
+        break;
+    case S_IFBLK:
+        printf("block device\n");
+        break;
+    case S_IFLNK:
+        printf("symbolic (soft) link\n");
+        break;
+    case S_IFIFO:
+        printf("FIFO or pipe\n");
+        break;
+    case S_IFSOCK:
+        printf("socket\n");
+        break;
+    default:
+        printf("unknown file type?\n");
+        break;
+    }
+    printf("File permissions: 0%o  ", sb->st_mode & 4095);
+    printPermissions(sb->st_mode);
+    printf("Device containing i-node: major=%d \n", sb->st_dev);
+
+    printf("I-node number: %ld\n", (long)sb->st_ino);
+
+    if (sb->st_mode & (S_ISUID | S_ISGID | S_ISVTX))
+        printf(" special bits set: %s%s%s\n",
+               (sb->st_mode & S_ISUID) ? "set-UID " : "",
+               (sb->st_mode & S_ISGID) ? "set-GID " : "",
+               (sb->st_mode & S_ISVTX) ? "sticky " : "");
+    printf("Number of (hard) links: %ld\n", (long)sb->st_nlink);
+
+    printf("Ownership: UID=%ld GID=%ld\n", (long)sb->st_uid, (long)sb->st_gid);
+    if (S_ISCHR(sb->st_mode) || S_ISBLK(sb->st_mode))
+        printf("Device number (st_rdev): major=%d \n", sb->st_rdev);
+    printf("File size: %d bytes\n", sb->st_size);
+    printf("Optimal I/O block size: %ld bytes\n", (long)sb->st_blksize);
+    printf("512B blocks allocated: %lld\n", (long long)sb->st_blocks);
+    printf("Last file access: %s", ctime(&sb->st_atime));
+    printf("Last file modification: %s", ctime(&sb->st_mtime));
+    printf("Last status change: %s", ctime(&sb->st_ctime));
+}
+
+void stat_file(char filename[])
+{
     struct stat sb;
-    if (stat(filename, &sb) == -1){
+    if (stat(filename, &sb) == -1)
+    {
         printf("\nError while getting stat file \n");
-        //exit(0);
+        exit(0);
     }
     displayStats(filename, &sb);
-
 }

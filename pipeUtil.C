@@ -54,6 +54,7 @@ int pipef(char filename1[], char filename2[], int bytecount) {
         return -1;
         }
     
+    printf("Data succesfully written from %s to %s using an unnamed pipe", filename1, filename2);
     free(buff);
     close(outputFile);  
     close(pipefd[0]);  

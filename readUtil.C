@@ -15,18 +15,19 @@ int readf(int fd , int bytecount, char* buff) {
     }
     return 1;
 }
-//this function reads the file with given file name, byte count and position from where to read
-// 
-int read_file(char filename[], int bytecount) {
+
+int read_file(char filename[], int bytecount, int offset, int whence) {
 
     int fd = open(filename, O_RDONLY);
     if (fd == -1) {
         printf("\nError in opening file : %s\n", filename);
         return -1;
     }
+    movefile_pointer(fd, offset, whence);
 
     char* buff  = (char*)malloc(bytecount * (sizeof(char)));
     if(readf(fd, bytecount, buff)== -1) {
+        free(buff);
         closef(fd);
         return -1;
     }

@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "statUtil.C": "cpp",
+        "pipeUtil.C": "cpp",
+        "readUtil.C": "cpp",
+        "writeUtil.C": "cpp",
+        "fileUtil.C": "cpp",
+        "osUtil.C": "cpp"
+    }
+}

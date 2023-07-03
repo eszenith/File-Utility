@@ -15,24 +15,6 @@ int writef(int fd , int bytecount, char* buff) {
 }
 
 
-
-void movefile_pointer(int fd, int offset, int whence) {
-    if(whence == 2) 
-        whence = SEEK_END;
-    else if (whence == 1) 
-        whence = SEEK_CUR;
-    else 
-        whence = SEEK_SET;
-
-    int curr = lseek(fd, offset ,whence);
-    printf("\ncurrent is : %d\n", curr);
-    if (curr == -1) {
-        printf("\n Error while seeking in file\n");
-        exit(0);
-    }
-}
-//this function reads the file with given file name, byte count and position from where to read
-// 
 int write_file(char filename[], int bytecount, int offset, int whence) {
 
     int fd = open(filename, O_WRONLY);
@@ -45,9 +27,9 @@ int write_file(char filename[], int bytecount, int offset, int whence) {
 
     char* buff  = (char*)malloc(bytecount * (sizeof(char)));
 
-    printf("i\n nput the data that needs to be written : ");
+    printf("\ninput the data that needs to be written : ");
     scanf("%s", buff);
-    printf("Data to be written : %s\n\n", buff);
+    printf("\nData to be written : %s\n\n", buff);
 
     writef(fd, bytecount, buff);
     

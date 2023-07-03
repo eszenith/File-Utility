@@ -41,22 +41,12 @@ void menu(){
         printf("\n4. Unamed pipe to tansfer data from one file to another");
         printf("\n5. Named pipe for process communication (Read data)");
         printf("\n6. Named pipe for process communication (Write data)");
-        printf("\n0. Exit \n");
+        printf("\n7. Create a new file");
+        printf("\n0. Exit \nEnter Option : ");
         scanf("%d", &option);
 
         switch(option) {
             case 1 :{
-                int bytecount=0;
-                char filename[2048];
-                printf("\nEnter file name : ");
-                scanf("%s", filename);
-                printf("\nEnter bytes to read : ");
-                scanf("%d", &bytecount);
-                read_file(filename, bytecount);
-                break;
-            }
-            
-            case 2 :{
                 int bytecount=0;
                 char filename[2048];
                 int whence = 0;
@@ -68,6 +58,30 @@ void menu(){
                 scanf("%d", &bytecount);
                 do {
                 printf("\nEnter from where to read file : ");
+                printf("\n1. beginning\n");
+                printf("\n2. current\n");
+                printf("\n3. end\n");
+                scanf("%d", &whence);
+                }while(whence-1 < 0 || whence-1 > 2);
+
+                printf("\n Enter offset inside file: ");
+                scanf("%d", &offset);
+
+                read_file(filename,bytecount, offset, whence);
+            }
+            break;
+            case 2 :{
+                int bytecount=0;
+                char filename[2048];
+                int whence = 0;
+                int offset = 0;
+
+                printf("\nEnter file name : ");
+                scanf("%s", filename);
+                printf("\nEnter bytes to write : ");
+                scanf("%d", &bytecount);
+                do {
+                printf("\nEnter from where to start writing to file : ");
                 printf("\n1. beginning\n");
                 printf("\n2. current\n");
                 printf("\n3. end\n");
@@ -124,6 +138,17 @@ void menu(){
                 break;
                 
             }
+            case 7: {
+                char filename[2048];
+                char perms[2048];
+                printf("\nEnter filename : ");
+                scanf("%s", filename);
+                printf("\nEnter permissions : ");
+                scanf("%s", perms);
+                create_file( filename, perms);
+                break;
+                
+            }
         }
     }while(0);
 }
@@ -131,7 +156,7 @@ void menu(){
 void help() {
     printf("\n-----------------help------------------\n");
     printf("\nUSAGE : ./main [OPTIONS] [PARAMETERS]\n");
-    printf("\n1.  ./main read filename bytecount\n");
+    printf("\n1.  ./main read filename bytecount offset whence\n");
     printf("\n2.  ./main write filename bytecount offset whence \n");
     printf("\n3.  ./main stat filename \n");
     printf("\n4.  ./main pipe filename1 filename2 bytecount\n");
@@ -142,75 +167,82 @@ void help() {
 }
 int main(int argc, char** argv) {
     
+    if(argc <= 1) {
+        printf("Invalid arguments, check help using ./main help or ./main -h \n");
+        return 1;
+    }
     
     if ( (strcmp(argv[1], "read") == 0) || (strcmp(argv[1], "-r") == 0) ) {
-        if(argc >= 3 && isnumber(argv[3]))   {
-            read_file(argv[2], getnumber(argv[3]));
+        if( argc >= 6 && isnumber(argv[3]) && isnumber(argv[4]) && isnumber(argv[5]) )   {
+            read_file( argv[2], getnumber(argv[3]), getnumber(argv[4]), getnumber(argv[5]) );
         }
         else {
-            printf("Invalid arguments : ");
+            printf("Invalid arguments, check help using ./main help or ./main -h \n");
         }
     }
-    if ( (strcmp(argv[1], "creat") == 0) || (strcmp(argv[1], "-c") == 0) ) {
-        if(argc >= 3 && isnumber(argv[3]))   {
+    else if ( (strcmp(argv[1], "creat") == 0) || (strcmp(argv[1], "-c") == 0) ) {
+        if(argc >= 4 && isnumber(argv[3]))   {
             create_file(argv[2], argv[3]);
         }
         else {
-            printf("Invalid arguments : ");
+            printf("Invalid arguments, check help using ./main help or ./main -h \n");
         }
     }
 
     else if ( (strcmp(argv[1], "write") == 0) || (strcmp(argv[1], "-w") == 0) ) {
-        if( argc >= 4 && isnumber(argv[3]) && isnumber(argv[4]) && isnumber(argv[5]) )   {
+        if( argc >= 6 && isnumber(argv[3]) && isnumber(argv[4]) && isnumber(argv[5]) )   {
             write_file( argv[2], getnumber(argv[3]), getnumber(argv[4]), getnumber(argv[5]) );
         }
         else {
-            printf("Invalid arguments : ");
+            printf("Invalid arguments, check help using ./main help or ./main -h \n");
         }
     }
 
     
     else if ( (strcmp(argv[1], "stat") == 0) || (strcmp(argv[1], "-s") == 0) ) {
-        if(argc >= 2)   {
+        if(argc >= 3)   {
             stat_file(argv[2]);
         }
         else {
-            printf("Invalid arguments : ");
+            printf("Invalid arguments, check help using ./main help or ./main -h \n");
         }
     }
 
     else if ( (strcmp(argv[1], "pipe") == 0) || (strcmp(argv[1], "-p") == 0) ) {
-        if( argc >= 4 && isnumber(argv[4]) )   {
+        if( argc >= 5 && isnumber(argv[4]) )   {
             pipef( argv[2], argv[3],getnumber(argv[4]));
         }
         else {
-            printf("Invalid arguments : ");
+            printf("Invalid arguments, check help using ./main help or ./main -h \n");
         }
     }
 
     else if ( (strcmp(argv[1], "npipe") == 0) || (strcmp(argv[1], "-np") == 0) ) {
-        if( argc >= 2 && isnumber(argv[4]) )   {
+        if( argc >= 5 && isnumber(argv[4]) )   {
             if (strcmp(argv[3],"read") == 0)
                 namedpipef( argv[2], getnumber(argv[4]),1 );
             else if (strcmp(argv[3],"write") == 0)
                 namedpipef( argv[2], getnumber(argv[4]),2 );
             else
-                printf("Invalid arguments : ");
+                printf("Invalid arguments, check help using ./main help or ./main -h \n");
         }
         else {
-            printf("Invalid arguments : ");
+            printf("Invalid arguments, check help using ./main help or ./main -h \n");
         }
     }
     else if ( (strcmp(argv[1], "menu") == 0) || (strcmp(argv[1], "-m") == 0) ) {
-        if( argc >=1 )   {
+        if( argc >=2 )   {
             menu();
         }
         else {
-            printf("Invalid arguments : ");
+            printf("Invalid arguments, check help using ./main help or ./main -h \n");
         }
     }
     else if ( (strcmp(argv[1], "help") == 0) || (strcmp(argv[1], "-h") == 0) ) {
         help();
+    }
+    else {
+        printf("Invalid arguments, check help using ./main help or ./main -h \n");
     }
 
 
