@@ -17,7 +17,7 @@ int writef(int fd , int bytecount, char* buff) {
 
 int write_file(char filename[], int bytecount, int offset, int whence) {
 
-    int fd = open(filename, O_WRONLY);
+    int fd = open(filename, O_WRONLY );
     if (fd == -1) {
         printf("\nError in opening file : %s\n", filename);
         return -1;
@@ -28,7 +28,8 @@ int write_file(char filename[], int bytecount, int offset, int whence) {
     char* buff  = (char*)malloc(bytecount * (sizeof(char)));
 
     printf("\ninput the data that needs to be written : ");
-    scanf("%s", buff);
+    //scanf("%s", buff);
+    fgets(buff,bytecount,stdin);
     printf("\nData to be written : %s\n\n", buff);
 
     writef(fd, bytecount, buff);

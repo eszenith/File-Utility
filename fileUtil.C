@@ -18,6 +18,7 @@ void create_file(char filename[], char* mode1) {
     if(fd == -1) {
         printf("\nError while creating file.\n");
     }
+    printf("\nFile succesfully created\n");
     closef(fd);
 }
 

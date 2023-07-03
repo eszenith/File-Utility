@@ -7,6 +7,7 @@
 #include "statUtil.h"
 #include "pipeUtil.h"
 #include "fileUtil.h"
+
 int isnumber(char num[]) {
     //if string is empty it will only have the null character
     if (num[0] == '\0') {
@@ -67,7 +68,7 @@ void menu(){
                 printf("\n Enter offset inside file: ");
                 scanf("%d", &offset);
 
-                read_file(filename,bytecount, offset, whence);
+                read_file(filename,bytecount, offset, whence-1);
             }
             break;
             case 2 :{
@@ -91,7 +92,7 @@ void menu(){
                 printf("\n Enter offset inside file: ");
                 scanf("%d", &offset);
 
-                write_file(filename,bytecount, offset, whence);
+                write_file(filename,bytecount, offset, whence-1);
                 break;
             }
             case 3 : {

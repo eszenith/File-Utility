@@ -24,6 +24,8 @@ int pipef(char filename1[], char filename2[], int bytecount) {
     if (inputFile == -1) {
         printf("\nError while creating pipe\n");
         free(buff);
+        closef(pipefd[1]);  
+        closef(pipefd[0]);  
         return -1;
     }
 
@@ -31,6 +33,8 @@ int pipef(char filename1[], char filename2[], int bytecount) {
     if (outputFile == -1) {
         printf("\nError while creating pipe\n");
         free(buff);
+        closef(pipefd[1]);  
+        closef(pipefd[0]);  
         return -1;
     }
 
@@ -39,6 +43,8 @@ int pipef(char filename1[], char filename2[], int bytecount) {
     if (write(pipefd[1], buff, bytesRead) != bytesRead){
         printf("\nError while creating pipe\n");
         free(buff);
+        closef(pipefd[1]);  
+        closef(pipefd[0]);  
         return -1;
         }
     
@@ -54,7 +60,7 @@ int pipef(char filename1[], char filename2[], int bytecount) {
         return -1;
         }
     
-    printf("Data succesfully written from %s to %s using an unnamed pipe", filename1, filename2);
+    printf("Data succesfully written from %s to %s using an unnamed pipe\n", filename1, filename2);
     free(buff);
     close(outputFile);  
     close(pipefd[0]);  
@@ -75,7 +81,8 @@ int namedpipef(char pipename[], int bytecount, int direction) {
     if(fork() != 0) {
         int pipefd = open(pipename, O_WRONLY);
         printf("\nIn parent process write data to send to child process through pipe named : %s\n", pipename);
-        scanf("%s", buff);
+        //scanf("%s", buff);
+        fgets(buff,bytecount,stdin);
         if (write(pipefd, buff, bytecount) == -1) {
                 printf("\nError while writing to named pipe\n");
                 return -1;
@@ -101,7 +108,8 @@ int namedpipef(char pipename[], int bytecount, int direction) {
         if(fork() == 0) {
         int pipefd = open(pipename, O_WRONLY);
         printf("\nIn child process write data to send to parent process through pipe named : %s\n", pipename);
-        scanf("%s", buff);
+        //scanf("%s", buff);
+        fgets(buff,bytecount,stdin);
         if (write(pipefd, buff, bytecount) == -1) {
                 printf("\nError while writing to named pipe\n");
                 return -1;

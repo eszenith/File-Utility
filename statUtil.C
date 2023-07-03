@@ -53,21 +53,16 @@ void displayStats(char *filename, const struct stat *sb)
     printPermissions(sb->st_mode);
     printf("Device containing i-node: major=%d \n", sb->st_dev);
 
-    printf("I-node number: %ld\n", (long)sb->st_ino);
+    printf("I-node number: %d\n", sb->st_ino);
 
-    if (sb->st_mode & (S_ISUID | S_ISGID | S_ISVTX))
-        printf(" special bits set: %s%s%s\n",
-               (sb->st_mode & S_ISUID) ? "set-UID " : "",
-               (sb->st_mode & S_ISGID) ? "set-GID " : "",
-               (sb->st_mode & S_ISVTX) ? "sticky " : "");
-    printf("Number of (hard) links: %ld\n", (long)sb->st_nlink);
+    printf("Number of (hard) links: %d\n", sb->st_nlink);
 
-    printf("Ownership: UID=%ld GID=%ld\n", (long)sb->st_uid, (long)sb->st_gid);
+    printf("Ownership: UID=%d GID=%d\n", sb->st_uid, sb->st_gid);
     if (S_ISCHR(sb->st_mode) || S_ISBLK(sb->st_mode))
         printf("Device number (st_rdev): major=%d \n", sb->st_rdev);
     printf("File size: %d bytes\n", sb->st_size);
-    printf("Optimal I/O block size: %ld bytes\n", (long)sb->st_blksize);
-    printf("512B blocks allocated: %lld\n", (long long)sb->st_blocks);
+    printf("Optimal I/O block size: %d bytes\n", sb->st_blksize);
+    printf("512B blocks allocated: %d\n", sb->st_blocks);
     printf("Last file access: %s", ctime(&sb->st_atime));
     printf("Last file modification: %s", ctime(&sb->st_mtime));
     printf("Last status change: %s", ctime(&sb->st_ctime));
