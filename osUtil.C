@@ -164,8 +164,8 @@ void help() {
     printf("\n2.  ./main write filename bytecount offset whence \n");
     printf("\n3.  ./main stat filename \n");
     printf("\n4.  ./main pipe filename1 filename2 bytecount\n");
-    printf("\n5.  ./main npipe bytecount read bytecount\n");
-    printf("\n6.  ./main npipe bytecount write bytecount permissions\n");
+    printf("\n5.  ./main npipe pipename read bytecount\n");
+    printf("\n6.  ./main npipe pipename write bytecount permissions\n");
     printf("\n7.  ./main creat filename permissions\n");
     printf("\n8.  ./main menu\n");
     printf("\n9.  ./main help\n");

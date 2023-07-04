@@ -23,7 +23,7 @@ int pipef(char filename1[], char filename2[], int bytecount) {
 
     int input_fd = open(filename1, O_RDONLY);
     if (input_fd == -1) {
-        printf("\nError while creating pipe\n");
+        printf("\nError wwhile opening input file\n");
         free(buff);
         closef(pipefd[1]);  
         closef(pipefd[0]);  
@@ -32,7 +32,7 @@ int pipef(char filename1[], char filename2[], int bytecount) {
 
     int output_fd= open(filename2, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (output_fd == -1) {
-        printf("\nError while creating pipe\n");
+        printf("\nError while  opening output file\n");
         free(buff);
         closef(pipefd[1]);  
         closef(pipefd[0]);  
@@ -41,11 +41,19 @@ int pipef(char filename1[], char filename2[], int bytecount) {
 
     no_of_bytes = read(input_fd, buff, bytecount);
     
-    if (write(pipefd[1], buff, no_of_bytes) != no_of_bytes){
-        printf("\nError while creating pipe\n");
+    if (no_of_bytes == -1) {
+        printf("\nError while reading from file\n");
         free(buff);
         closef(pipefd[1]);  
         closef(pipefd[0]);  
+        return -1;
+    }
+    if (write(pipefd[1], buff, no_of_bytes) == -1){
+        printf("\nError while writing to pipe\n");
+        free(buff);
+        closef(pipefd[1]);  
+        closef(pipefd[0]);  
+        close(input_fd);
         return -1;
         }
     
@@ -55,8 +63,8 @@ int pipef(char filename1[], char filename2[], int bytecount) {
 
     no_of_bytes = read(pipefd[0], buff, bytecount);
 
-    if (write(output_fd, buff, no_of_bytes) != no_of_bytes) {
-        printf("\nError while creating pipe\n");
+    if (write(output_fd, buff, no_of_bytes)  == -1) {
+        printf("\nError while writing to pipe\n");
         free(buff);
         return -1;
         }
