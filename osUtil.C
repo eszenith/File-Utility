@@ -124,18 +124,21 @@ void menu(){
                 scanf("%s", pipename);
                 printf("\nEnter bytes to read : ");
                 scanf("%d", &bytecount);
-                namedpipef( pipename, bytecount, 1);
+                namedpipef( pipename, bytecount, 2, NULL);
                 break;
                 
             }
             case 6: {
                 int bytecount=0;
                 char pipename[2048];
+                char perms[2048];
                 printf("\nEnter pipename : ");
                 scanf("%s", pipename);
                 printf("\nEnter bytes to read : ");
                 scanf("%d", &bytecount);
-                namedpipef( pipename, bytecount, 2);
+                printf("\nEnter permissions : ");
+                scanf("%s", perms);
+                namedpipef( pipename, bytecount, 1, perms);
                 break;
                 
             }
@@ -161,10 +164,11 @@ void help() {
     printf("\n2.  ./main write filename bytecount offset whence \n");
     printf("\n3.  ./main stat filename \n");
     printf("\n4.  ./main pipe filename1 filename2 bytecount\n");
-    printf("\n5.  ./main npipe bytecount\n");
-    printf("\n6.  ./main creat filename permissions\n");
-    printf("\n7.  ./main menu\n");
-    printf("\n8.  ./main help\n");
+    printf("\n5.  ./main npipe bytecount read bytecount\n");
+    printf("\n6.  ./main npipe bytecount write bytecount permissions\n");
+    printf("\n7.  ./main creat filename permissions\n");
+    printf("\n8.  ./main menu\n");
+    printf("\n9.  ./main help\n");
 }
 int main(int argc, char** argv) {
     
@@ -220,10 +224,16 @@ int main(int argc, char** argv) {
 
     else if ( (strcmp(argv[1], "npipe") == 0) || (strcmp(argv[1], "-np") == 0) ) {
         if( argc >= 5 && isnumber(argv[4]) )   {
-            if (strcmp(argv[3],"read") == 0)
-                namedpipef( argv[2], getnumber(argv[4]),1 );
-            else if (strcmp(argv[3],"write") == 0)
-                namedpipef( argv[2], getnumber(argv[4]),2 );
+            if (strcmp(argv[3],"write") == 0)
+            {
+                if(argc <=5) {
+                    printf("\ninvalid arguments \n");
+                    return 0;
+                }
+                namedpipef( argv[2], getnumber(argv[4]),1 ,argv[5]);
+            }
+            else if (strcmp(argv[3],"read") == 0)
+                namedpipef( argv[2], getnumber(argv[4]),2 , NULL);
             else
                 printf("Invalid arguments, check help using ./main help or ./main -h \n");
         }

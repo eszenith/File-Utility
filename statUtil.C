@@ -1,10 +1,10 @@
-#define _DEFAULT_SOURCE /* Get major() and minor() from <sys/types.h> */
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <time.h>
 #include <cstdlib>
 #include <stdio.h>
 
+//This function prints the formatted file permission details for a given mode variable.
 void printPermissions(mode_t mode)
 {
     printf((mode & S_IRUSR) ? "r" : "-");
@@ -19,6 +19,7 @@ void printPermissions(mode_t mode)
     printf("\n");
 }
 
+//Given a filled structure stat, this function prints the data of structure on console.
 void displayStats(char *filename, const struct stat *sb)
 {
     printf("\n\nFile type: ");
@@ -51,15 +52,14 @@ void displayStats(char *filename, const struct stat *sb)
     }
     printf("File permissions: 0%o  ", sb->st_mode & 4095);
     printPermissions(sb->st_mode);
-    printf("Device containing i-node: major=%d \n", sb->st_dev);
+    printf("Device containing i-node: %d \n", sb->st_dev);
 
     printf("I-node number: %d\n", sb->st_ino);
 
     printf("Number of (hard) links: %d\n", sb->st_nlink);
 
     printf("Ownership: UID=%d GID=%d\n", sb->st_uid, sb->st_gid);
-    if (S_ISCHR(sb->st_mode) || S_ISBLK(sb->st_mode))
-        printf("Device number (st_rdev): major=%d \n", sb->st_rdev);
+
     printf("File size: %d bytes\n", sb->st_size);
     printf("Optimal I/O block size: %d bytes\n", sb->st_blksize);
     printf("512B blocks allocated: %d\n", sb->st_blocks);
@@ -68,6 +68,7 @@ void displayStats(char *filename, const struct stat *sb)
     printf("Last status change: %s", ctime(&sb->st_ctime));
 }
 
+//This function uses the stat system call to read data into a variable which is passed to displayStats to print the data.
 void stat_file(char filename[])
 {
     struct stat sb;

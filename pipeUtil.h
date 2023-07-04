@@ -2,6 +2,6 @@
 #define PIPEUTIL_H
 
 int pipef(char filename1[], char filename2[], int bytecount);
-int namedpipef(char pipename[], int bytecount, int direction);
+int namedpipef(char pipename[], int bytecount, int direction, char* permissions);
 
 #endif

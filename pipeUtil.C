@@ -8,11 +8,12 @@
 #include "fileUtil.h"
 #include "writeUtil.h"
 
+//This function creates an unnamed pipe and transfers data from one file to another with error checking.
 int pipef(char filename1[], char filename2[], int bytecount) {
     int pipefd[2];
     char* buff  = (char*)malloc(bytecount * (sizeof(char)));
 
-    int bytesRead;
+    int no_of_bytes;
 
     if (pipe(pipefd) == -1) {
         printf("\nError while creating pipe\n");
@@ -20,8 +21,8 @@ int pipef(char filename1[], char filename2[], int bytecount) {
         return -1;
     }
 
-    int inputFile = open(filename1, O_RDONLY);
-    if (inputFile == -1) {
+    int input_fd = open(filename1, O_RDONLY);
+    if (input_fd == -1) {
         printf("\nError while creating pipe\n");
         free(buff);
         closef(pipefd[1]);  
@@ -29,8 +30,8 @@ int pipef(char filename1[], char filename2[], int bytecount) {
         return -1;
     }
 
-    int outputFile = open(filename2, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    if (outputFile == -1) {
+    int output_fd= open(filename2, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (output_fd == -1) {
         printf("\nError while creating pipe\n");
         free(buff);
         closef(pipefd[1]);  
@@ -38,9 +39,9 @@ int pipef(char filename1[], char filename2[], int bytecount) {
         return -1;
     }
 
-    bytesRead = read(inputFile, buff, bytecount);
+    no_of_bytes = read(input_fd, buff, bytecount);
     
-    if (write(pipefd[1], buff, bytesRead) != bytesRead){
+    if (write(pipefd[1], buff, no_of_bytes) != no_of_bytes){
         printf("\nError while creating pipe\n");
         free(buff);
         closef(pipefd[1]);  
@@ -49,12 +50,12 @@ int pipef(char filename1[], char filename2[], int bytecount) {
         }
     
 
-    close(inputFile);  
+    close(input_fd);  
     close(pipefd[1]);  
 
-    bytesRead = read(pipefd[0], buff, bytecount);
+    no_of_bytes = read(pipefd[0], buff, bytecount);
 
-    if (write(outputFile, buff, bytesRead) != bytesRead) {
+    if (write(output_fd, buff, no_of_bytes) != no_of_bytes) {
         printf("\nError while creating pipe\n");
         free(buff);
         return -1;
@@ -62,72 +63,45 @@ int pipef(char filename1[], char filename2[], int bytecount) {
     
     printf("Data succesfully written from %s to %s using an unnamed pipe\n", filename1, filename2);
     free(buff);
-    close(outputFile);  
+    close(output_fd);  
     close(pipefd[0]);  
     return 0;
 
 }
 
-
-int namedpipef(char pipename[], int bytecount, int direction) {
+// either makes and write to named pipe or read from named pipe depending on user argument to process
+int namedpipef(char pipename[], int bytecount, int option, char* permissions) {
     char* buff  = (char*)malloc(bytecount * (sizeof(char)));
-    mknod(pipename, S_IFIFO | 0777, 0);
 
-    char parent[] = "parent";
-    char child[] = "child";
-
-    if(direction == 1) {
-        printf("\n ( Parent -> Child ) Child process reads data \n");
-    if(fork() != 0) {
+    if(option == 1) {
+ 
+        printf("\n This is the writing process which creates and writes into the pipe \n");
+        umask(0);
+        mode_t mode = strtol(permissions, NULL, 8);
+        mknod(pipename, S_IFIFO | mode, 0);
         int pipefd = open(pipename, O_WRONLY);
-        printf("\nIn parent process write data to send to child process through pipe named : %s\n", pipename);
-        //scanf("%s", buff);
+        printf("\nData to send through pipe : %s\n", pipename);
         fgets(buff,bytecount,stdin);
         if (write(pipefd, buff, bytecount) == -1) {
                 printf("\nError while writing to named pipe\n");
-                return -1;
-            }
-        closef(pipefd);
-    }
-    else {
-        char* buff2  = (char*)malloc(bytecount * (sizeof(char)));
-        int pipefd = open(pipename, O_RDONLY);
-        if (read(pipefd, buff2, bytecount) == -1) {
-                printf("\nError while readingto named pipe\n");
+                closef(pipefd);
                 return -1;
         }
-        printf("\nRecieved following in child process from parent process :\n");
-        printf("%s\n", buff2);
         closef(pipefd);
-        free(buff2);
-    }
     }
 
     else {
-        printf("\n( Child -> Parent ) Child process writes data \n");
-        if(fork() == 0) {
-        int pipefd = open(pipename, O_WRONLY);
-        printf("\nIn child process write data to send to parent process through pipe named : %s\n", pipename);
-        //scanf("%s", buff);
-        fgets(buff,bytecount,stdin);
-        if (write(pipefd, buff, bytecount) == -1) {
-                printf("\nError while writing to named pipe\n");
-                return -1;
-            }
-        closef(pipefd);
-    }
-    else {
+        printf("\nThis is a reading process \n");
         char* buff2  = (char*)malloc(bytecount * (sizeof(char)));
         int pipefd = open(pipename, O_RDONLY);
         if (read(pipefd, buff2, bytecount) == -1) {
-                printf("\nError while readingto named pipe\n");
+                printf("\nError while reading to named pipe\n");
                 return -1;
         }
-        printf("\nRecieved following in parent process from child process :\n");
+        printf("\nRecieved following from another writing process :\n");
         printf("%s\n", buff2);
         closef(pipefd);
         free(buff2);
-    }
     }
 
     free(buff);

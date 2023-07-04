@@ -6,6 +6,7 @@
 #include "fileUtil.h"
 #include <cstdlib>
 
+//Given a file descriptor, bytecount and buffer, This function writes data from file to buffer
 int writef(int fd , int bytecount, char* buff) {
     if(write(fd, buff, bytecount) == -1) {
         printf("\nError while writing to the file \n");
@@ -14,7 +15,7 @@ int writef(int fd , int bytecount, char* buff) {
     return 1;
 }
 
-
+//Takes data from the user and writes it to a given file This function is a wrapper to writef()
 int write_file(char filename[], int bytecount, int offset, int whence) {
 
     int fd = open(filename, O_WRONLY );
