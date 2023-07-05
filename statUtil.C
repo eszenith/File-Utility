@@ -53,13 +53,9 @@ void displayStats(char *filename, const struct stat *sb)
     printf("File permissions: 0%o  ", sb->st_mode & 4095);
     printPermissions(sb->st_mode);
     printf("Device containing i-node: %d \n", sb->st_dev);
-
     printf("I-node number: %d\n", sb->st_ino);
-
     printf("Number of (hard) links: %d\n", sb->st_nlink);
-
     printf("Ownership: UID=%d GID=%d\n", sb->st_uid, sb->st_gid);
-
     printf("File size: %d bytes\n", sb->st_size);
     printf("Optimal I/O block size: %d bytes\n", sb->st_blksize);
     printf("512B blocks allocated: %d\n", sb->st_blocks);
